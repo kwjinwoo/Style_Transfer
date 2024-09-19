@@ -60,5 +60,5 @@ def get_feature_extractor() -> GraphModule:
     Returns:
         GraphModule: feature extractor.
     """
-    vgg = vgg19(weights=VGG19_Weights.DEFAULT)
+    vgg = vgg19(weights=VGG19_Weights.DEFAULT).eval()
     return make_feature_extractor(vgg)
