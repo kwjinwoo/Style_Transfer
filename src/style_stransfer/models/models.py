@@ -7,6 +7,15 @@ from style_stransfer.models.utils import get_module
 
 
 def is_conv2d_module(node: Node, base_graph: GraphModule) -> bool:
+    """check input node is conv2d nn.Module.
+
+    Args:
+        node (Node): fx Node.
+        base_graph (GraphModule): traced fx graph.
+
+    Returns:
+        bool: if input node is conv2d nn.Module, return True. else False.
+    """
     if node.op == "call_module":
         module = get_module(node.target, base_graph)
         if isinstance(module, nn.Conv2d):
@@ -15,6 +24,14 @@ def is_conv2d_module(node: Node, base_graph: GraphModule) -> bool:
 
 
 def make_feature_extractor(base_model: nn.Module) -> GraphModule:
+    """make feature extractor for style transfer.
+
+    Args:
+        base_model (nn.Module): pre-trained model.
+
+    Returns:
+        GraphModule: feature extractor.
+    """
     base_graph = symbolic_trace(base_model)
 
     feature_extractor_graph = Graph()
@@ -37,6 +54,11 @@ def make_feature_extractor(base_model: nn.Module) -> GraphModule:
     return GraphModule(base_model, feature_extractor_graph)
 
 
-def get_feature_extractor() -> nn.Module:
+def get_feature_extractor() -> GraphModule:
+    """get feature extractor.
+
+    Returns:
+        GraphModule: feature extractor.
+    """
     vgg = vgg19(weights=VGG19_Weights.DEFAULT)
     return make_feature_extractor(vgg)
