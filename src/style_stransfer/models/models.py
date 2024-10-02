@@ -75,8 +75,8 @@ class Normalizer(nn.Module):
         """
         super().__init__(**kwargs)
 
-        self.mean = mean.view(-1, 1, 1)
-        self.std = std.view(-1, 1, 1)
+        self.mean = torch.nn.Parameter(mean.view(-1, 1, 1))
+        self.std = torch.nn.Parameter(std.view(-1, 1, 1))
 
     def forward(self, img: torch.Tensor) -> torch.Tensor:
         """noramlize input image.

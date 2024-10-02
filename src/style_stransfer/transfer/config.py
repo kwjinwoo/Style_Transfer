@@ -10,3 +10,4 @@ class TransferConfig:
     content_weight: float = 1.0
     normalize_mean: torch.Tensor = torch.tensor([0.485, 0.456, 0.406])
     normalize_std: torch.Tensor = torch.tensor([0.229, 0.224, 0.225])
+    device: torch.device = torch.device("cpu")
