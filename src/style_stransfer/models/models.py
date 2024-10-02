@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from torch.fx import Graph, GraphModule, Node, symbolic_trace
 from torchvision.models.vgg import VGG19_Weights, vgg19
@@ -62,3 +63,28 @@ def get_feature_extractor() -> GraphModule:
     """
     vgg = vgg19(weights=VGG19_Weights.DEFAULT).eval()
     return make_feature_extractor(vgg)
+
+
+class Normalizer(nn.Module):
+    def __init__(self, mean: torch.Tensor, std: torch.Tensor, **kwargs) -> None:
+        """image normalizing module.
+
+        Args:
+            mean (torch.Tensor): vgg19 mean values.
+            std (torch.Tensor): vgg19 std values.
+        """
+        super().__init__(**kwargs)
+
+        self.mean = mean.view(-1, 1, 1)
+        self.std = std.view(-1, 1, 1)
+
+    def forward(self, img: torch.Tensor) -> torch.Tensor:
+        """noramlize input image.
+
+        Args:
+            img (torch.Tensor): input image.
+
+        Returns:
+            torch.Tensor: normalized image.
+        """
+        return (img - self.mean) / self.std
