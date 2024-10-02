@@ -1,3 +1,3 @@
-from .loss import StyleLoss
+from .loss import ContentLoss, StyleLoss
 
-__all__ = ["StyleLoss"]
+__all__ = ["StyleLoss", "ContentLoss"]
