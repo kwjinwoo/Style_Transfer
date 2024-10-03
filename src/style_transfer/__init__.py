@@ -1,5 +1,5 @@
-from style_stransfer.dataloader import get_content_style_img
-from style_stransfer.models import get_feature_extractor
+from style_transfer.dataloader import get_content_style_img
+from style_transfer.models import get_feature_extractor
 
 
 def transfer(content_img_path: str, style_img_path) -> None:

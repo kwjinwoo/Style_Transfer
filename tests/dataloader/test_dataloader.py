@@ -1,6 +1,6 @@
 import torch
 
-from style_stransfer.dataloader import get_content_style_img
+from style_transfer.dataloader import get_content_style_img
 
 
 def test_get_content_style_img() -> None:

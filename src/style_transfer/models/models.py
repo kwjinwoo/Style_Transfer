@@ -3,8 +3,8 @@ import torch.nn as nn
 from torch.fx import Graph, GraphModule, Node, symbolic_trace
 from torchvision.models.vgg import VGG19_Weights, vgg19
 
-from style_stransfer.models.constants import CONV_IDX_LIST
-from style_stransfer.models.utils import get_module
+from style_transfer.models.constants import CONV_IDX_LIST
+from style_transfer.models.utils import get_module
 
 
 def is_conv2d_module(node: Node, base_graph: GraphModule) -> bool:

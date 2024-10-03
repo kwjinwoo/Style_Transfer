@@ -1,6 +1,6 @@
 import torch
 
-from style_stransfer.loss import ContentLoss, StyleLoss
+from style_transfer.loss import ContentLoss, StyleLoss
 
 
 def test_style_loss():

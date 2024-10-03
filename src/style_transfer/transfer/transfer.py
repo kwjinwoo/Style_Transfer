@@ -1,0 +1,107 @@
+from typing import Tuple
+
+import torch
+import torch.nn as nn
+from torch.optim import LBFGS, Optimizer
+
+from style_transfer.loss import ContentLoss, StyleLoss
+from style_transfer.models import Normalizer
+from style_transfer.transfer.config import TransferConfig
+
+
+class Transfer:
+    def __init__(
+        self,
+        content_img: torch.Tensor,
+        style_img: torch.Tensor,
+        feature_extarctor: nn.Module,
+        transfer_config: TransferConfig,
+    ) -> None:
+        """Style Transfer module.
+
+        Args:
+            content_img (torch.Tensor): content image.
+            style_img (torch.Tensor): style image.
+            feature_extarctor (nn.Module): feature extractor.
+            transfer_config (TransferConfig): config.
+        """
+        self.gen_img = content_img.clone().detach().requires_grad_(True)
+        self.content_img = content_img.requires_grad_(False)
+        self.style_img = style_img.requires_grad_(False)
+        self.feature_extractor = feature_extarctor.eval()
+        self.transfer_config = transfer_config
+
+        self.optimizer = self.get_optimizer()
+        self.nomalizer = self.get_normalizer().eval()
+
+        self.content_loss = ContentLoss()
+        self.style_loss = StyleLoss()
+
+        self.style_feature_idx = 3
+
+    def get_optimizer(self) -> Optimizer:
+        """get optimizer.
+
+        Returns:
+            Optimizer: optimizer.
+        """
+        return LBFGS([self.gen_img])
+
+    def get_normalizer(self) -> Normalizer:
+        """get image normalizer.
+
+        Returns:
+            Normalizer: normalizer module.
+        """
+        return Normalizer(self.transfer_config.normalize_mean, self.transfer_config.normalize_std)
+
+    def set_device(self) -> None:
+        """set device."""
+        device = self.transfer_config.device
+
+        self.gen_img = self.gen_img.to(device=device)
+        self.content_img = self.content_img.to(device=device)
+        self.style_img = self.style_img.to(device=device)
+        self.nomalizer = self.nomalizer.to(device=device)
+        self.feature_extractor = self.feature_extractor.to(device=device)
+
+    def get_processed_images(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """preprocessing images.
+
+        Returns:
+            Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: processed gen, content, style image
+        """
+        return self.nomalizer(self.gen_img), self.nomalizer(self.content_img), self.nomalizer(self.style_img)
+
+    def run(self) -> torch.Tensor:
+        """perfomrs style transfer.
+
+        Returns:
+            torch.Tensor: transfered image.
+        """
+        self.set_device()
+        gen_img, content_img, style_img = self.get_processed_images()
+
+        content_features = self.feature_extractor(content_img)
+        style_features = self.feature_extractor(style_img)
+
+        for step in range(self.transfer_config.num_steps):
+            self.optimizer.zero_grad()
+
+            gen_features = self.feature_extractor(gen_img)
+
+            content_loss = self.content_loss(gen_features, content_features)
+            style_loss = self.style_loss(gen_features[self.style_feature_idx], style_features[self.style_feature_idx])
+
+            total_loss = (
+                self.transfer_config.content_weight * content_loss + self.transfer_config.style_weight * style_loss
+            )
+            total_loss.backward()
+
+            self.optimizer.step()
+
+            print(
+                f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()}"
+                f"content loss: {content_loss.item()}"
+            )
+        return gen_img

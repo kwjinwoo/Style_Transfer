@@ -1,9 +1,9 @@
-import dataclasses
+from dataclasses import dataclass
 
 import torch
 
 
-@dataclasses
+@dataclass
 class TransferConfig:
     num_steps: int = 300
     style_weight: float = 1000000.0
