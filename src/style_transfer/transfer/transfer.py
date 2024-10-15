@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import torch
 import torch.nn as nn
 from torch.optim import Adam
@@ -65,28 +63,6 @@ class Transfer:
         self.nomalizer = self.nomalizer.to(device=device)
         self.feature_extractor = self.feature_extractor.to(device=device)
 
-    def get_processed_images(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """preprocessing images.
-
-        Returns:
-            Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: processed gen, content, style image
-        """
-        return self.nomalizer(self.gen_img), self.nomalizer(self.content_img), self.nomalizer(self.style_img)
-
-    def detach_features(self, features: List[torch.Tensor]) -> List[torch.Tensor]:
-        """detach features.
-
-        Args:
-            features (List[torch.Tensor]): input features.
-
-        Returns:
-            List[torch.Tensor]: detached features.
-        """
-        detached_tensors = []
-        for feature in features:
-            detached_tensors.append(feature.detach())
-        return detached_tensors
-
     def run(self) -> torch.Tensor:
         """perfomrs style transfer.
 
@@ -94,12 +70,14 @@ class Transfer:
             torch.Tensor: transfered image.
         """
         self.set_device()
-        gen_img, content_img, style_img = self.get_processed_images()
+        content_img = self.nomalizer(self.content_img)
+        style_img = self.nomalizer(self.style_img)
 
-        content_features = self.detach_features(self.feature_extractor(content_img))
-        style_features = self.detach_features(self.feature_extractor(style_img))
+        content_features = self.feature_extractor(content_img)
+        style_features = self.feature_extractor(style_img)
 
         for step in range(self.transfer_config.num_steps):
+            gen_img = self.nomalizer(self.gen_img)
             self.optimizer.zero_grad()
 
             gen_features = self.feature_extractor(gen_img)
@@ -118,4 +96,4 @@ class Transfer:
                 f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()} "
                 f"content loss: {content_loss.item()}"
             )
-        return gen_img
+        return self.gen_img
