@@ -1,8 +1,8 @@
-from typing import Tuple
+from typing import List, Tuple
 
 import torch
 import torch.nn as nn
-from torch.optim import LBFGS, Optimizer
+from torch.optim import Adam
 
 from style_transfer.loss import ContentLoss, StyleLoss
 from style_transfer.models import Normalizer
@@ -25,9 +25,9 @@ class Transfer:
             feature_extarctor (nn.Module): feature extractor.
             transfer_config (TransferConfig): config.
         """
-        self.gen_img = content_img.clone().detach().requires_grad_(True)
-        self.content_img = content_img.requires_grad_(False)
-        self.style_img = style_img.requires_grad_(False)
+        self.gen_img = content_img.clone().requires_grad_(True)
+        self.content_img = content_img
+        self.style_img = style_img
         self.feature_extractor = feature_extarctor.eval()
         self.transfer_config = transfer_config
 
@@ -39,13 +39,13 @@ class Transfer:
 
         self.style_feature_idx = 3
 
-    def get_optimizer(self) -> Optimizer:
+    def get_optimizer(self) -> Adam:
         """get optimizer.
 
         Returns:
             Optimizer: optimizer.
         """
-        return LBFGS([self.gen_img])
+        return Adam([self.gen_img])
 
     def get_normalizer(self) -> Normalizer:
         """get image normalizer.
@@ -73,6 +73,12 @@ class Transfer:
         """
         return self.nomalizer(self.gen_img), self.nomalizer(self.content_img), self.nomalizer(self.style_img)
 
+    def detach_features(self, features: List[torch.Tensor]) -> List[torch.Tensor]:
+        detached_tensors = []
+        for feature in features:
+            detached_tensors.append(feature.detach())
+        return detached_tensors
+
     def run(self) -> torch.Tensor:
         """perfomrs style transfer.
 
@@ -82,8 +88,8 @@ class Transfer:
         self.set_device()
         gen_img, content_img, style_img = self.get_processed_images()
 
-        content_features = self.feature_extractor(content_img)
-        style_features = self.feature_extractor(style_img)
+        content_features = self.detach_features(self.feature_extractor(content_img))
+        style_features = self.detach_features(self.feature_extractor(style_img))
 
         for step in range(self.transfer_config.num_steps):
             self.optimizer.zero_grad()
@@ -96,12 +102,12 @@ class Transfer:
             total_loss = (
                 self.transfer_config.content_weight * content_loss + self.transfer_config.style_weight * style_loss
             )
-            total_loss.backward()
+            total_loss.backward(retain_graph=True)
 
             self.optimizer.step()
 
             print(
-                f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()}"
+                f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()} "
                 f"content loss: {content_loss.item()}"
             )
         return gen_img
