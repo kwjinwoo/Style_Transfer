@@ -13,4 +13,4 @@ def test_transfer(config):
 
     gen_img = transfer.run()
 
-    assert gen_img.size() == torch.Size([1, 3, 1, 10])
+    assert gen_img.size() == torch.Size([1, 3, 10, 10])

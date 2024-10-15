@@ -74,6 +74,14 @@ class Transfer:
         return self.nomalizer(self.gen_img), self.nomalizer(self.content_img), self.nomalizer(self.style_img)
 
     def detach_features(self, features: List[torch.Tensor]) -> List[torch.Tensor]:
+        """detach features.
+
+        Args:
+            features (List[torch.Tensor]): input features.
+
+        Returns:
+            List[torch.Tensor]: detached features.
+        """
         detached_tensors = []
         for feature in features:
             detached_tensors.append(feature.detach())
