@@ -1,3 +1,5 @@
+from typing import List
+
 import torch
 import torch.nn as nn
 from torch.fx import Graph, GraphModule, Node, symbolic_trace
@@ -66,14 +68,17 @@ def get_feature_extractor() -> GraphModule:
 
 
 class Normalizer(nn.Module):
-    def __init__(self, mean: torch.Tensor, std: torch.Tensor, **kwargs) -> None:
+    def __init__(self, mean: List[float], std: List[float], **kwargs) -> None:
         """image normalizing module.
 
         Args:
-            mean (torch.Tensor): vgg19 mean values.
-            std (torch.Tensor): vgg19 std values.
+            mean (List[float]): vgg19 mean values.
+            std (List[float]): vgg19 std values.
         """
         super().__init__(**kwargs)
+
+        mean = torch.tensor(mean)
+        std = torch.tensor(std)
 
         self.mean = torch.nn.Parameter(mean.view(-1, 1, 1))
         self.std = torch.nn.Parameter(std.view(-1, 1, 1))

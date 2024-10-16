@@ -55,7 +55,7 @@ class Transfer:
 
     def set_device(self) -> None:
         """set device."""
-        device = self.transfer_config.device
+        device = torch.device(self.transfer_config.device)
 
         self.gen_img = self.gen_img.to(device=device)
         self.content_img = self.content_img.to(device=device)
