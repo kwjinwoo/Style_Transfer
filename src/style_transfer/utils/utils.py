@@ -1,5 +1,9 @@
 import json
+import os
 from typing import Dict
+
+import torch
+from torchvision import transforms
 
 from style_transfer.transfer.config import TransferConfig
 
@@ -29,3 +33,18 @@ def load_config(path: str) -> TransferConfig:
     """
     json_config = load_json(path)
     return TransferConfig(**json_config)
+
+
+def save_image(image_tensor: torch.Tensor, save_dir: str) -> None:
+    """save image from tensor.
+
+    Args:
+        image_tensor (torch.Tensor): image tensor to save.
+        save_path (str): save directory.
+    """
+    image_tensor = image_tensor.cpu().clone().squeeze(0)
+
+    pil_image = transforms.ToPILImage()(image_tensor)
+
+    save_path = os.path.join(save_dir, "transfer_image.jpg")
+    pil_image.save(save_path)

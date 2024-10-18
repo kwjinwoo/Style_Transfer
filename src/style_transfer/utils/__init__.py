@@ -1,3 +1,3 @@
-from .utils import load_config
+from .utils import load_config, save_image
 
-__all__ = ["load_config"]
+__all__ = ["load_config", "save_image"]

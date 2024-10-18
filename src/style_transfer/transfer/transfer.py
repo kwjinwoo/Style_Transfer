@@ -96,4 +96,5 @@ class Transfer:
                 f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()} "
                 f"content loss: {content_loss.item()}"
             )
-        return self.gen_img
+
+        return torch.clamp(self.gen_img, 0, 1)
