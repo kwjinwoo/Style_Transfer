@@ -48,3 +48,13 @@ def save_image(image_tensor: torch.Tensor, save_dir: str) -> None:
 
     save_path = os.path.join(save_dir, "transfer_image.jpg")
     pil_image.save(save_path)
+
+
+def init_dir(save_dir: str) -> None:
+    """if save dir is not exist, make dir.
+
+    Args:
+        save_dir (str): dir path.
+    """
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
