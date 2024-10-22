@@ -7,14 +7,6 @@ from style_transfer.models import get_feature_extractor
 from style_transfer.transfer import Transfer
 from style_transfer.utils import init_dir, load_config, save_image
 
-parser = argparse.ArgumentParser(description="Image style Transfer.")
-parser.add_argument("-c", "--content_img", action="store", type=str, required=True, help="content image path.")
-parser.add_argument("-s", "--style_image", action="store", type=str, required=True, help="style image path.")
-parser.add_argument("-f", "--config_path", action="store", type=str, required=True, help="config json paht.")
-parser.add_argument("-d", "--save_dir", action="store", type=str, required=True, help="save dir path.")
-
-args = parser.parse_args()
-
 
 def transfer_image(content_img_path: str, style_img_path: str, config_path: str) -> torch.Tensor:
     """image style transfer.
@@ -36,6 +28,14 @@ def transfer_image(content_img_path: str, style_img_path: str, config_path: str)
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Image style Transfer.")
+    parser.add_argument("-c", "--content_img", action="store", type=str, required=True, help="content image path.")
+    parser.add_argument("-s", "--style_image", action="store", type=str, required=True, help="style image path.")
+    parser.add_argument("-f", "--config_path", action="store", type=str, required=True, help="config json paht.")
+    parser.add_argument("-d", "--save_dir", action="store", type=str, required=True, help="save dir path.")
+
+    args = parser.parse_args()
+
     content_image_path = args.content_img
     style_image_path = args.style_img
     config_path = args.config_path
