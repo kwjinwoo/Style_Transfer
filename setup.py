@@ -6,4 +6,5 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     entry_points={"console_scripts": ["style-transfer=style_transfer:main"]},
+    install_requires=["torch>=2.4.1", "pillow>=10.40"],
 )
