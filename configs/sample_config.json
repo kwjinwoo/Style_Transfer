@@ -1,0 +1,6 @@
+{
+    "num_steps": 100,
+    "style_weight": 1.0,
+    "content_weight": 1000.0,
+    "device": "gpu:0"
+}
