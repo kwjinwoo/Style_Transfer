@@ -43,7 +43,7 @@ class Transfer:
         Returns:
             Optimizer: optimizer.
         """
-        return Adam([self.gen_img])
+        return Adam([self.gen_img], lr=1e1)
 
     def get_normalizer(self) -> Normalizer:
         """get image normalizer.

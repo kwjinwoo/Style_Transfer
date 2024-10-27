@@ -1,6 +1,6 @@
 {
     "num_steps": 100,
     "style_weight": 1.0,
-    "content_weight": 1000.0,
+    "content_weight": 100.0,
     "device": "cuda:0"
 }
