@@ -2,5 +2,5 @@
     "num_steps": 300,
     "style_weight": 1000000.0,
     "content_weight": 1.0,
-    "device": "cpu"
+    "device": "cuda:0"
 }
