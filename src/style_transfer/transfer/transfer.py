@@ -64,6 +64,19 @@ class Transfer:
         self.nomalizer = self.nomalizer.to(device=device)
         self.feature_extractor = self.feature_extractor.to(device=device)
 
+    def de_normalize(self, img: torch.Tensor) -> torch.Tensor:
+        """image de normalization.
+
+        Args:
+            img (torch.Tensor): input image.
+
+        Returns:
+            torch.Tensor: denormalized image.
+        """
+        mean = torch.tensor(self.transfer_config.normalize_mean).view(-1, 1, 1)
+        std = torch.tensor(self.transfer_config.normalize_std).view(-1, 1, 1)
+        return std * img + mean
+
     def run(self) -> torch.Tensor:
         """perfomrs style transfer.
 
@@ -98,4 +111,4 @@ class Transfer:
                 f"content loss: {content_loss.item()}"
             )
 
-        return torch.clamp(self.gen_img, 0, 1)
+        return self.de_normalize(torch.clamp(self.gen_img, 0, 1))
