@@ -73,8 +73,8 @@ class Transfer:
         Returns:
             torch.Tensor: denormalized image.
         """
-        mean = torch.tensor(self.transfer_config.normalize_mean).view(-1, 1, 1)
-        std = torch.tensor(self.transfer_config.normalize_std).view(-1, 1, 1)
+        mean = torch.tensor(self.transfer_config.normalize_mean).view(-1, 1, 1).to(device=img.device)
+        std = torch.tensor(self.transfer_config.normalize_std).view(-1, 1, 1).to(device=img.device)
         return std * img + mean
 
     def run(self) -> torch.Tensor:
