@@ -34,7 +34,7 @@ class Transfer:
         self.content_loss = ContentLoss()
         self.style_loss = StyleLoss()
 
-        self.style_feature_idx = 3
+        self.content_feature_idx = 3
 
     def get_optimizer(self, gen_img: torch.Tensor) -> Adam:
         """get optimizer.
@@ -96,8 +96,10 @@ class Transfer:
 
             gen_features = self.feature_extractor(gen_img)
 
-            content_loss = self.content_loss(gen_features, content_features)
-            style_loss = self.style_loss(gen_features[self.style_feature_idx], style_features[self.style_feature_idx])
+            content_loss = self.content_loss(
+                gen_features[self.content_feature_idx], content_features[self.content_feature_idx]
+            )
+            style_loss = self.style_loss(gen_features, style_features)
 
             total_loss = (
                 self.transfer_config.content_weight * content_loss + self.transfer_config.style_weight * style_loss
