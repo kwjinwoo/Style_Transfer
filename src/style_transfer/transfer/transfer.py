@@ -23,13 +23,12 @@ class Transfer:
             feature_extarctor (nn.Module): feature extractor.
             transfer_config (TransferConfig): config.
         """
-        self.gen_img = content_img.clone().requires_grad_(True)
+        self.gen_img = content_img.clone()
         self.content_img = content_img
         self.style_img = style_img
         self.feature_extractor = feature_extarctor.eval()
         self.transfer_config = transfer_config
 
-        self.optimizer = self.get_optimizer()
         self.nomalizer = self.get_normalizer().eval()
 
         self.content_loss = ContentLoss()
@@ -37,13 +36,15 @@ class Transfer:
 
         self.style_feature_idx = 3
 
-    def get_optimizer(self) -> Adam:
+    def get_optimizer(self, gen_img: torch.Tensor) -> Adam:
         """get optimizer.
 
+        Args:
+            gen_img (torch.Tensor): gen image to be optimized.
         Returns:
             Optimizer: optimizer.
         """
-        return Adam([self.gen_img], lr=1e1)
+        return Adam([gen_img], lr=1)
 
     def get_normalizer(self) -> Normalizer:
         """get image normalizer.
@@ -72,13 +73,13 @@ class Transfer:
         self.set_device()
         content_img = self.nomalizer(self.content_img)
         style_img = self.nomalizer(self.style_img)
-
+        optimizer = self.get_optimizer(self.gen_img.requires_grad_(True))
         content_features = self.feature_extractor(content_img)
         style_features = self.feature_extractor(style_img)
 
         for step in range(self.transfer_config.num_steps):
             gen_img = self.nomalizer(self.gen_img)
-            self.optimizer.zero_grad()
+            optimizer.zero_grad()
 
             gen_features = self.feature_extractor(gen_img)
 
@@ -90,7 +91,7 @@ class Transfer:
             )
             total_loss.backward(retain_graph=True)
 
-            self.optimizer.step()
+            optimizer.step()
 
             print(
                 f"step_{step} total loss: {total_loss.item()} style loss: {style_loss.item()} "
