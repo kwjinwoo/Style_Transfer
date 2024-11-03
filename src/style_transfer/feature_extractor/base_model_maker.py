@@ -9,7 +9,7 @@ class BaseModelMaker:
         self.base_model_name = base_model_name
 
         self.base_model_map = {"vgg19": vgg19, "vgg16": vgg16}
-        self.base_weight_map = {vgg19: VGG19_Weights.IMAGENET1K_V1, vgg16: VGG16_Weights}
+        self.base_weight_map = {vgg19: VGG19_Weights.IMAGENET1K_V1, vgg16: VGG16_Weights.IMAGENET1K_V1}
 
     def get_base_model(self) -> nn.Module:
         """get base model.
