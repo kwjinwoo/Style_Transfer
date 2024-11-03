@@ -1,6 +1,6 @@
 import torch
 
-from style_transfer.models import get_feature_extractor
+from style_transfer.feature_extractor import get_feature_extractor
 from style_transfer.transfer import Transfer
 
 

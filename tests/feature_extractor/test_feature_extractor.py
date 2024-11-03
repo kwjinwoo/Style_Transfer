@@ -1,6 +1,6 @@
 import torch
 
-from style_transfer.models import Normalizer, get_feature_extractor
+from style_transfer.feature_extractor import Normalizer, get_feature_extractor
 
 
 def test_get_feature_extractor():

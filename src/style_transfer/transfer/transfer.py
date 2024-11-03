@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from torch.optim import Adam
 
+from style_transfer.feature_extractor import Normalizer
 from style_transfer.loss import ContentLoss, StyleLoss
-from style_transfer.models import Normalizer
 from style_transfer.transfer.config import TransferConfig
 
 
