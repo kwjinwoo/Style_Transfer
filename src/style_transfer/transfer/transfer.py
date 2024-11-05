@@ -92,4 +92,4 @@ class Transfer:
                 f"content loss: {content_loss.item()}"
             )
 
-        return torch.clamp(self.gen_img, 0, 1)
+        return self.gen_img

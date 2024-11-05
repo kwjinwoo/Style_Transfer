@@ -57,7 +57,7 @@ class ImageProcessor:
 
     def post_processing(self, image: torch.Tensor) -> torch.Tensor:
         """post processing.
-        de-normalize input image.
+        de-normalize input image and clamp.
 
         Args:
             image (torch.Tensor): input image.
@@ -67,4 +67,5 @@ class ImageProcessor:
         """
         mean = torch.tensor(self.means).view(-1, 1, 1).to(image.device)
         std = torch.tensor(self.std).view(-1, 1, 1).to(image.device)
-        return std * image + mean
+        image = std * image + mean
+        return torch.clamp(image, 0, 1)
