@@ -50,7 +50,7 @@ class Transfer:
         Returns:
             Optimizer: optimizer.
         """
-        return Adam([gen_img], lr=1)
+        return Adam([gen_img], lr=0.01)
 
     def set_device(self) -> None:
         """set device."""
