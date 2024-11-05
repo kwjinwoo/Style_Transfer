@@ -85,7 +85,7 @@ class FeatureExtractor:
             if conv_idx > max_conv_idx:
                 break
         feature_extractor_graph.output(feature_extractor_outputs)
-        return GraphModule(self.base_model, feature_extractor_graph)
+        return GraphModule(self.base_model, feature_extractor_graph).eval()
 
     def forward(self, x: torch.Tensor) -> List[torch.Tensor]:
         """return features.

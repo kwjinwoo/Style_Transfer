@@ -2,8 +2,8 @@ import argparse
 
 import torch
 
-from style_transfer.image_processor import get_content_style_img
-from style_transfer.models import get_feature_extractor
+from style_transfer.feature_extractor import get_feature_extractor
+from style_transfer.image_processor import ImageProcessor
 from style_transfer.transfer import Transfer
 from style_transfer.utils import init_dir, load_config, save_image
 
@@ -19,12 +19,15 @@ def transfer_image(content_img_path: str, style_img_path: str, config_path: str)
     Returns:
         torch.Tensor: transfered image.
     """
-    content_img, style_img = get_content_style_img(content_img_path, style_img_path)
-    feature_extractor = get_feature_extractor()
     transfer_config = load_config(config_path)
+    image_processor = ImageProcessor(content_img_path, style_img_path, transfer_config)
+    content_img, style_img, gen_img = image_processor.get_train_images()
 
-    transfer = Transfer(content_img, style_img, feature_extractor, transfer_config)
-    return transfer.run()
+    feature_extractor = get_feature_extractor(transfer_config.base_model_name, transfer_config.conv_layer_nums)
+
+    transfer = Transfer(content_img, style_img, gen_img, feature_extractor, transfer_config)
+    transfered_image = transfer.run()
+    return image_processor.post_processing(transfered_image)
 
 
 def main() -> None:

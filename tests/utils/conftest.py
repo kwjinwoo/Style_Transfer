@@ -13,7 +13,6 @@ def transfer_config_path(tmp_path):
         "content_weight": 1,
         "normalize_mean": [1, 1, 1],
         "normalize_std": [2, 2, 2],
-        "device": "cpu",
     }
 
     with open(config_path, "w") as f:
