@@ -9,4 +9,6 @@ class TransferConfig:
     content_weight: float = 1.0
     normalize_mean: List[float] = field(default_factory=lambda: [0.485, 0.456, 0.406])
     normalize_std: List[float] = field(default_factory=lambda: [0.229, 0.224, 0.225])
+    image_height: int = 512
+    image_width: int = 512
     device: str = "cpu"

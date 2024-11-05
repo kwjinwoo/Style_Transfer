@@ -2,7 +2,7 @@ import argparse
 
 import torch
 
-from style_transfer.dataloader import get_content_style_img
+from style_transfer.image_processor import get_content_style_img
 from style_transfer.models import get_feature_extractor
 from style_transfer.transfer import Transfer
 from style_transfer.utils import init_dir, load_config, save_image
